@@ -1,0 +1,22 @@
+{
+    "GET /products": {
+        "mutation": "NO",
+        "idempotent": "YES"
+    },
+    "POST /products": {
+        "mutation": "YES",
+        "idempotent": "NO"
+    },
+    "PUT /products/:id": {
+        "mutation": "YES",
+        "idempotent": "YES"
+    },
+    "PUT /products/:id/increment": {
+        "mutation": "YES",
+        "idempotent": "NO"
+    },
+    "DELETE /products/:id": {
+        "mutation": "YES",
+        "idempotent": "YES"
+    }
+}
