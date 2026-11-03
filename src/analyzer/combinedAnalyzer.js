@@ -7,13 +7,19 @@ function combineProperty(staticValue, dynamicValue) {
 }
 
 function combineResults(staticResult, dynamicResult) {
-    const dynamicMutation = dynamicResult.mutated
-        ? "YES"
-        : "NO";
+    const dynamicMutation =
+        dynamicResult.mutated === null
+            ? "UNCERTAIN"
+            : dynamicResult.mutated
+                ? "YES"
+                : "NO";
 
-    const dynamicIdempotent = dynamicResult.idempotent
-        ? "YES"
-        : "NO";
+    const dynamicIdempotent =
+        dynamicResult.idempotent === null
+            ? "UNCERTAIN"
+            : dynamicResult.idempotent
+                ? "YES"
+                : "NO";
 
     const combinedMutation = combineProperty(
         staticResult.staticMutation,
@@ -121,7 +127,7 @@ function calculateAccuracy(results, method, property) {
 
         const prediction = result[property]?.[method];
 
-        if (!prediction) {
+        if (!prediction || prediction === "UNCERTAIN") {
             continue;
         }
 

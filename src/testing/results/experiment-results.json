@@ -1,0 +1,100 @@
+{
+  "experiment": "Backend API Behaviour Analysis",
+  "endpoints_tested": 5,
+  "results": [
+    {
+      "method": "GET",
+      "endpoint": "/products",
+      "mutation": {
+        "groundTruth": "NO",
+        "static": "NO",
+        "dynamic": "NO",
+        "combined": "NO"
+      },
+      "idempotency": {
+        "groundTruth": "YES",
+        "static": "YES",
+        "dynamic": "YES",
+        "combined": "YES"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/products",
+      "mutation": {
+        "groundTruth": "YES",
+        "static": "YES",
+        "dynamic": "YES",
+        "combined": "YES"
+      },
+      "idempotency": {
+        "groundTruth": "NO",
+        "static": "NO",
+        "dynamic": "NO",
+        "combined": "NO"
+      }
+    },
+    {
+      "method": "PUT",
+      "endpoint": "/products/:id",
+      "mutation": {
+        "groundTruth": "YES",
+        "static": "YES",
+        "dynamic": "YES",
+        "combined": "YES"
+      },
+      "idempotency": {
+        "groundTruth": "YES",
+        "static": "YES",
+        "dynamic": "YES",
+        "combined": "YES"
+      }
+    },
+    {
+      "method": "PUT",
+      "endpoint": "/products/:id/increment",
+      "mutation": {
+        "groundTruth": "YES",
+        "static": "YES",
+        "dynamic": "YES",
+        "combined": "YES"
+      },
+      "idempotency": {
+        "groundTruth": "NO",
+        "static": "NO",
+        "dynamic": "NO",
+        "combined": "NO"
+      }
+    },
+    {
+      "method": "DELETE",
+      "endpoint": "/products/:id",
+      "mutation": {
+        "groundTruth": "YES",
+        "static": "YES",
+        "dynamic": "YES",
+        "combined": "YES"
+      },
+      "idempotency": {
+        "groundTruth": "YES",
+        "static": "YES",
+        "dynamic": "YES",
+        "combined": "YES"
+      }
+    }
+  ],
+  "evaluation_summary": {
+    "mutation": {
+      "http_baseline": "5/5",
+      "static_analysis": "5/5",
+      "dynamic_testing": "5/5",
+      "combined_analysis": "5/5"
+    },
+    "idempotency": {
+      "http_baseline": "4/5",
+      "static_analysis": "5/5",
+      "dynamic_testing": "5/5",
+      "combined_analysis": "5/5"
+    }
+  }
+}

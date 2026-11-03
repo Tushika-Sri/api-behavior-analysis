@@ -16,7 +16,12 @@ function loadLabels() {
 }
 
 function normalizeEndpoint(endpoint) {
-    return endpoint.replace(/\/[^/]+$/, "/:id");
+    return endpoint
+        .split("/")
+        .map(segment =>
+            /^\d+$/.test(segment) ? ":id" : segment
+        )
+        .join("/");
 }
 
 function getLabel(method, endpoint) {
