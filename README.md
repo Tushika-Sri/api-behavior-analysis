@@ -4,7 +4,7 @@ A Node.js research prototype investigating persistent state mutation and operati
 
 ## Research Objective
 
-To examine how static analysis and dynamic testing can identify behavioral properties of backend API endpoints, and compare their predictions with HTTP-method-based heuristics.
+To examine how static analysis and dynamic testing can identify behavioral properties of backend API endpoints and compare their predictions with HTTP-method-based heuristics.
 
 ## Methodology
 
@@ -32,32 +32,68 @@ The prototype evaluates five API endpoints:
 
 **Prerequisites:** Node.js and MySQL.
 
-1. Clone the repository:
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/Tushika-Sri/api-behavior-analysis.git
 cd api-behavior-analysis
 ```
 
-2. Install dependencies:
+### 2. Install dependencies
 
 ```bash
 npm install
 ```
 
-3. Configure MySQL:
+### 3. Configure the database
 
-Create the database and required `products` table. Add the database connection details and server port to a `.env` file.
+Create the database and products table:
 
-Ensure the database contains the initial product records expected by the experiment.
+```sql
+CREATE DATABASE api_behavior_analysis;
 
-4. Start the API server:
+USE api_behavior_analysis;
+
+CREATE TABLE products (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    price DECIMAL(10,2) NOT NULL
+);
+```
+
+Insert sample records:
+
+```sql
+INSERT INTO products (id, name, price)
+VALUES
+(1, 'Laptop', 75000.00),
+(2, 'Mobile', 25000.00),
+(3, 'Tablet', 30000.00);
+```
+
+### 4. Configure environment variables
+
+Create a `.env` file in the project root:
+
+```env
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=your_password
+DB_NAME=api_behavior_analysis
+PORT=3000
+```
+
+Use the variable names expected by your database connection code. Do not commit `.env` or actual credentials.
+
+### 5. Start the API server
 
 ```bash
 node src/server.js
 ```
 
-5. In a separate terminal, run the experiment:
+### 6. Run the experiment
+
+Open another terminal:
 
 ```bash
 node src/runExperiment.js
