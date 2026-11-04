@@ -11,8 +11,14 @@ To examine how static analysis and dynamic testing can identify behavioral prope
 - **Static Analysis:** Uses JavaScript AST parsing with Babel Parser to identify SQL operations and infer API behavior.
 - **Dynamic Testing:** Executes API requests and compares database snapshots to detect persistent state changes.
 - **Idempotency Testing:** Repeats identical requests to observe whether subsequent executions cause additional database state changes.
-- **Combined Analysis:** Compares static and dynamic predictions, marking disagreements as `UNCERTAIN`.
+- **Combined Analysis:** Compares static and dynamic predictions, marking disagreements or unavailable evidence as `UNCERTAIN`.
 - **Evaluation:** Compares predictions against manually assigned ground-truth labels.
+
+### Pipeline Overview
+
+![API Behavior Analysis Pipeline](images/research-pipeline.png)
+
+*Figure 1: Evaluation pipeline. Each API endpoint is evaluated for persistent state mutation and operational idempotency using four approaches: an HTTP-method baseline, static analysis, dynamic testing, and combined analysis. Predictions are compared against manually assigned ground-truth labels. Disagreements or unavailable evidence in the combined analysis are reported as UNCERTAIN.*
 
 ## Technologies
 
@@ -83,8 +89,6 @@ DB_NAME=api_behavior_analysis
 PORT=3000
 ```
 
-Use the variable names expected by your database connection code. Do not commit `.env` or actual credentials.
-
 ### 5. Start the API server
 
 ```bash
@@ -109,6 +113,8 @@ The endpoint predictions and evaluation summary are printed in the terminal.
 | Static analysis | 5/5 | 5/5 |
 | Dynamic testing | 5/5 | 5/5 |
 | Combined analysis | 5/5 | 5/5 |
+
+The following results represent the number of correct predictions out of five evaluated endpoints for each behavioral property.
 
 The HTTP-method baseline misclassified the increment endpoint's idempotency. Static and dynamic analysis identified its non-idempotent behavior in this experiment.
 
