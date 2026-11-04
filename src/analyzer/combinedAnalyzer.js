@@ -52,6 +52,7 @@ function getHttpBaseline(method, property) {
         if (
             method === "POST" ||
             method === "PUT" ||
+            method === "PATCH" ||
             method === "DELETE"
         ) {
             return "YES";
@@ -59,7 +60,12 @@ function getHttpBaseline(method, property) {
     }
 
     if (property === "idempotent") {
-        if (method === "GET" || method === "PUT" || method === "DELETE") {
+        if (
+            method === "GET" ||
+            method === "PUT" ||
+            method === "PATCH" ||
+            method === "DELETE"
+        ) {
             return "YES";
         }
 

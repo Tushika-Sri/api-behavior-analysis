@@ -199,8 +199,13 @@ function inferIdempotency(method, queries, staticMutation) {
         return "YES";
     }
 
-    if (method === "PUT" && queries.some(query => query.operation === "UPDATE")) {
-        const updateQueries = queries.filter(query => query.operation === "UPDATE");
+    if (
+        (method === "PUT" || method === "PATCH") &&
+        queries.some(query => query.operation === "UPDATE")
+    ) {
+        const updateQueries = queries.filter(
+            query => query.operation === "UPDATE"
+        );
 
         for (const query of updateQueries) {
             if (isIncrementOrDecrement(query.sql)) {
@@ -211,12 +216,17 @@ function inferIdempotency(method, queries, staticMutation) {
         return "YES";
     }
 
-    if (method === "DELETE" && queries.some(query => query.operation === "DELETE")
+    if (
+        method === "DELETE" &&
+        queries.some(query => query.operation === "DELETE")
     ) {
         return "YES";
     }
 
-    if (method === "POST" && queries.some(query => query.operation === "INSERT")) {
+    if (
+        method === "POST" &&
+        queries.some(query => query.operation === "INSERT")
+    ) {
         return "NO";
     }
 
@@ -258,6 +268,7 @@ function analyzeRoutes() {
                 "get",
                 "post",
                 "put",
+                "patch",
                 "delete"
             ].includes(
                 methodNode.name

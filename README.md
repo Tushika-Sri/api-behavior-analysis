@@ -12,9 +12,9 @@ To examine how static analysis and dynamic testing can identify behavioral prope
 - **Dynamic Testing:** Executes API requests and compares database snapshots to detect persistent state changes.
 - **Idempotency Testing:** Repeats identical requests to observe whether subsequent executions cause additional database state changes.
 - **Combined Analysis:** Compares static and dynamic predictions, marking disagreements or unavailable evidence as `UNCERTAIN`.
-- **Evaluation:** Compares predictions against manually assigned ground-truth labels.
+- **Evaluation:** Compares predictions against manually assigned ground-truth labels using accuracy and coverage.
 
-### Pipeline Overview
+## Pipeline Overview
 
 ![API Behavior Analysis Pipeline](images/research-pipeline.png)
 
@@ -26,17 +26,27 @@ JavaScript, Node.js, Express.js, MySQL, Babel Parser.
 
 ## Experimental Setup
 
-The prototype evaluates five API endpoints:
+The prototype evaluates ten API endpoints:
 
-- `GET /products`
-- `POST /products`
-- `PUT /products/:id`
-- `PUT /products/:id/increment`
-- `DELETE /products/:id`
+1. `GET /products`
+2. `POST /products`
+3. `PUT /products/:id`
+4. `PUT /products/:id/increment`
+5. `DELETE /products/:id`
+6. `GET /products/:id/view`
+7. `GET /products/:id/details`
+8. `POST /products/upsert`
+9. `POST /products/:id/audit`
+10. `PATCH /products/:id/price`
+
+The experiment evaluates two behavioral properties:
+
+- **Persistent state mutation:** Whether an API request changes the persistent database state.
+- **Operational idempotency:** Whether repeating an identical request causes additional persistent database state changes.
 
 ## Installation and Setup
 
-**Prerequisites:** Node.js and MySQL.
+**Prerequisites:** Node.js, npm, and MySQL.
 
 ### 1. Clone the repository
 
@@ -53,29 +63,13 @@ npm install
 
 ### 3. Configure the database
 
-Create the database and products table:
+Create the database and tables, and insert the sample records using the provided schema:
 
-```sql
-CREATE DATABASE api_behavior_analysis;
-
-USE api_behavior_analysis;
-
-CREATE TABLE products (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    price DECIMAL(10,2) NOT NULL
-);
+```bash
+mysql -u root -p < database/schema.sql
 ```
 
-Insert sample records:
-
-```sql
-INSERT INTO products (id, name, price)
-VALUES
-(1, 'Laptop', 75000.00),
-(2, 'Mobile', 25000.00),
-(3, 'Tablet', 30000.00);
-```
+Enter your MySQL password when prompted.
 
 ### 4. Configure environment variables
 
@@ -88,6 +82,8 @@ DB_PASSWORD=your_password
 DB_NAME=api_behavior_analysis
 PORT=3000
 ```
+
+Replace the placeholder values with your local MySQL credentials. Do not commit your `.env` file.
 
 ### 5. Start the API server
 
@@ -107,23 +103,41 @@ The endpoint predictions and evaluation summary are printed in the terminal.
 
 ## Results
 
-| Approach | Mutation | Idempotency |
+The following tables present the evaluation results from the ten-endpoint experiment. Accuracy is calculated using definite predictions only, excluding `UNCERTAIN` results. Coverage represents the proportion of evaluated endpoints for which a definite prediction was produced.
+
+### Mutation
+
+| Approach | Accuracy | Coverage |
 |---|---:|---:|
-| HTTP baseline | 5/5 | 4/5 |
-| Static analysis | 5/5 | 5/5 |
-| Dynamic testing | 5/5 | 5/5 |
-| Combined analysis | 5/5 | 5/5 |
+| HTTP baseline | 8/10 (80.0%) | 10/10 (100.0%) |
+| Static analysis | 9/9 (100.0%) | 9/10 (90.0%) |
+| Dynamic testing | 10/10 (100.0%) | 10/10 (100.0%) |
+| Combined analysis | 9/9 (100.0%) | 9/10 (90.0%) |
 
-The following results represent the number of correct predictions out of five evaluated endpoints for each behavioral property.
+### Idempotency
 
-The HTTP-method baseline misclassified the increment endpoint's idempotency. Static and dynamic analysis identified its non-idempotent behavior in this experiment.
+| Approach | Accuracy | Coverage |
+|---|---:|---:|
+| HTTP baseline | 6/10 (60.0%) | 10/10 (100.0%) |
+| Static analysis | 7/8 (87.5%) | 8/10 (80.0%) |
+| Dynamic testing | 10/10 (100.0%) | 10/10 (100.0%) |
+| Combined analysis | 7/7 (100.0%) | 7/10 (70.0%) |
+
+### Observations
+
+- The HTTP-method baseline produced predictions for all ten endpoints but misclassified some behavioral properties.
+- Static analysis achieved high accuracy among definite predictions but could not resolve every endpoint, particularly where behavior involved imported helper functions.
+- Dynamic testing correctly classified all ten endpoints under the tested conditions.
+- Combined analysis achieved 100% accuracy among its definite idempotency predictions, with 70% coverage. It reported uncertain results where static and dynamic evidence disagreed or where static analysis could not resolve the behavior.
 
 ## Limitations
 
-- Evaluation is limited to five API endpoints.
-- Database-state observation covers only the `products` table.
+- Evaluation is limited to ten API endpoints.
+- Database-state observation covers only the products and product_audit tables.
 - Ground-truth labels are manually assigned based on endpoint implementation.
-- Static analysis uses simplified JavaScript AST and SQL pattern detection.
-- Idempotency is evaluated through persistent database-state changes, not HTTP response equivalence.
+- Static analysis uses simplified JavaScript AST and SQL pattern detection and does not comprehensively resolve behavior across imported helper functions.
+- Idempotency is evaluated through observed database-state changes, not HTTP response equivalence.
+- Dynamic results are limited to the tested requests, inputs, and database conditions.
+- Ground-truth labels and dynamic testing share a database-state-based definition, which may partly influence the measured dynamic testing accuracy.
 
-The results are preliminary and limited to the current proof of concept.
+The results are preliminary and limited to the current proof of concept. They should not be interpreted as evidence of general accuracy across arbitrary APIs.

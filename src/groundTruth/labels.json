@@ -18,5 +18,25 @@
     "DELETE /products/:id": {
         "mutation": "YES",
         "idempotent": "YES"
+    },
+    "GET /products/:id/view": {
+        "mutation": "YES",
+        "idempotent": "NO"
+    },
+    "GET /products/:id/details": {
+        "mutation": "YES",
+        "idempotent": "NO"
+    },
+    "POST /products/upsert": {
+        "mutation": "YES",
+        "idempotent": "YES"
+    },
+    "POST /products/:id/audit": {
+        "mutation": "YES",
+        "idempotent": "NO"
+    },
+    "PATCH /products/:id/price": {
+        "mutation": "YES",
+        "idempotent": "YES"
     }
 }

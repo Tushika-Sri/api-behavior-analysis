@@ -5,14 +5,19 @@ const { captureProductsState, restoreProductsState } = require("./testing/testEn
 const { combineResults, evaluateResult } = require("./analyzer/combinedAnalyzer");
 const { annotateResult } = require("./groundTruth/annotator");
 
-const BASE_URL = process.env.BASE_URL;;
+const BASE_URL = process.env.BASE_URL;
 
 const testCases = [
     { method: "GET", endpoint: "/products" },
     { method: "POST", endpoint: "/products", body: { name: "Test Product", price: 1000 } },
     { method: "PUT", endpoint: "/products/1", body: { name: "Laptop Updated", price: 80000 } },
     { method: "PUT", endpoint: "/products/1/increment" },
-    { method: "DELETE", endpoint: "/products/3" }
+    { method: "DELETE", endpoint: "/products/3" },
+    { method: "GET", endpoint: "/products/1/view" },
+    { method: "GET", endpoint: "/products/1/details" },
+    { method: "POST", endpoint: "/products/upsert", body: { sku: "TEST-SKU-001", name: "Upsert Test Product", price: 1500 } },
+    { method: "POST", endpoint: "/products/1/audit" },
+    { method: "PATCH", endpoint: "/products/1/price", body: { price: 2500 } }
 ];
 
 function matchesRoute(staticEndpoint, testEndpoint) {
@@ -36,8 +41,9 @@ function matchesRoute(staticEndpoint, testEndpoint) {
     return true;
 }
 
-function calculateAccuracy(results, property, method) {
+function calculateMetrics(results, property, method) {
     let correct = 0;
+    let definite = 0;
     let total = 0;
 
     const groundTruthProperty =
@@ -52,58 +58,79 @@ function calculateAccuracy(results, property, method) {
         const prediction =
             result.evaluation?.[property]?.[method];
 
-        if (!actual || !prediction) {
+        if (!actual) {
             continue;
         }
 
         total++;
+
+        if (!prediction || prediction === "UNCERTAIN") {
+            continue;
+        }
+
+        definite++;
 
         if (actual === prediction) {
             correct++;
         }
     }
 
-    return `${correct}/${total}`;
+    const uncertain = total - definite;
+
+    const accuracy =
+        definite > 0
+            ? ((correct / definite) * 100).toFixed(1)
+            : "N/A";
+
+    const coverage =
+        total > 0
+            ? ((definite / total) * 100).toFixed(1)
+            : "N/A";
+
+    return {
+        accuracy: `${correct}/${definite} (${accuracy}%)`,
+        coverage: `${definite}/${total} (${coverage}%)`,
+        uncertain: `${uncertain}/${total}`
+    };
 }
 
 function printEvaluation(results) {
-    console.log("\nEvaluation Summary\n");
+    const methods = [
+        { label: "HTTP baseline", key: "httpBaseline" },
+        { label: "Static analysis", key: "static" },
+        { label: "Dynamic testing", key: "dynamic" },
+        { label: "Combined analysis", key: "combined" }
+    ];
 
-    console.log("Mutation");
-    console.log(
-        "HTTP baseline:",
-        calculateAccuracy(results, "mutation", "httpBaseline")
-    );
-    console.log(
-        "Static analysis:",
-        calculateAccuracy(results, "mutation", "static")
-    );
-    console.log(
-        "Dynamic testing:",
-        calculateAccuracy(results, "mutation", "dynamic")
-    );
-    console.log(
-        "Combined analysis:",
-        calculateAccuracy(results, "mutation", "combined")
-    );
+    function printProperty(property, title) {
+        console.log(`\n${title}`);
+        console.log(
+            "Method".padEnd(22) +
+            "Accuracy".padEnd(22) +
+            "Coverage".padEnd(22) +
+            "Uncertain"
+        );
 
-    console.log("\nIdempotency");
-    console.log(
-        "HTTP baseline:",
-        calculateAccuracy(results, "idempotency", "httpBaseline")
-    );
-    console.log(
-        "Static analysis:",
-        calculateAccuracy(results, "idempotency", "static")
-    );
-    console.log(
-        "Dynamic testing:",
-        calculateAccuracy(results, "idempotency", "dynamic")
-    );
-    console.log(
-        "Combined analysis:",
-        calculateAccuracy(results, "idempotency", "combined")
-    );
+        for (const method of methods) {
+            const metrics = calculateMetrics(
+                results,
+                property,
+                method.key
+            );
+
+            console.log(
+                method.label.padEnd(22) +
+                metrics.accuracy.padEnd(22) +
+                metrics.coverage.padEnd(22) +
+                metrics.uncertain
+            );
+        }
+    }
+
+    console.log("\nEvaluation Summary");
+
+    printProperty("mutation", "Mutation");
+    printProperty("idempotency", "Idempotency");
 }
 
 async function runExperiment() {
@@ -111,57 +138,62 @@ async function runExperiment() {
     const initialState = await captureProductsState();
     const finalResults = [];
 
-    for (const testCase of testCases) {
-        await restoreProductsState(initialState);
+    try {
+        for (const testCase of testCases) {
+            await restoreProductsState(initialState);
 
-        const staticResult = staticResults.find(
-            result =>
-                result.method === testCase.method &&
-                matchesRoute(result.endpoint, testCase.endpoint)
-        );
+            const staticResult = staticResults.find(
+                result =>
+                    result.method === testCase.method &&
+                    matchesRoute(result.endpoint, testCase.endpoint)
+            );
 
-        if (!staticResult) {
-            continue;
+            if (!staticResult) {
+                continue;
+            }
+
+            const url = `${BASE_URL}${testCase.endpoint}`;
+
+            const mutationResult = await testMutation(
+                testCase.method,
+                url,
+                testCase.body
+            );
+
+            await restoreProductsState(initialState);
+
+            const idempotencyResult = await testIdempotency(
+                testCase.method,
+                url,
+                testCase.body
+            );
+
+            const dynamicResult = {
+                mutated: mutationResult.mutated,
+                idempotent: idempotencyResult.idempotent
+            };
+
+            const combinedResult = combineResults(
+                staticResult,
+                dynamicResult
+            );
+
+            const annotatedResult = annotateResult(combinedResult);
+            const evaluation = evaluateResult(annotatedResult);
+
+            finalResults.push({
+                ...annotatedResult,
+                evaluation
+            });
         }
 
-        const url = `${BASE_URL}${testCase.endpoint}`;
+        console.log(JSON.stringify(finalResults, null, 2));
+        printEvaluation(finalResults);
 
-        const mutationResult = await testMutation(
-            testCase.method,
-            url,
-            testCase.body
-        );
-
+    } finally {
         await restoreProductsState(initialState);
-
-        const idempotencyResult = await testIdempotency(
-            testCase.method,
-            url,
-            testCase.body
-        );
-
-        const dynamicResult = {
-            mutated: mutationResult.mutated,
-            idempotent: idempotencyResult.idempotent
-        };
-
-        const combinedResult = combineResults(
-            staticResult,
-            dynamicResult
-        );
-
-        const annotatedResult = annotateResult(combinedResult);
-        const evaluation = evaluateResult(annotatedResult);
-
-        finalResults.push({
-            ...annotatedResult,
-            evaluation
-        });
+        console.log("\nOriginal database state restored.");
     }
-
-    await restoreProductsState(initialState);
-    console.log(JSON.stringify(finalResults, null, 2));
-    printEvaluation(finalResults);
 }
 
 runExperiment().catch(error => {
