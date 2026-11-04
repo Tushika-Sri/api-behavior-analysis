@@ -321,18 +321,3 @@
   }
 ]
 
-Evaluation Summary
-
-Mutation
-Method                Accuracy              Coverage              Uncertain
-HTTP baseline         8/10 (80.0%)          10/10 (100.0%)        0/10
-Static analysis       9/9 (100.0%)          9/10 (90.0%)          1/10
-Dynamic testing       10/10 (100.0%)        10/10 (100.0%)        0/10
-Combined analysis     9/9 (100.0%)          9/10 (90.0%)          1/10
-
-Idempotency
-Method                Accuracy              Coverage              Uncertain
-HTTP baseline         6/10 (60.0%)          10/10 (100.0%)        0/10
-Static analysis       7/8 (87.5%)           8/10 (80.0%)          2/10
-Dynamic testing       10/10 (100.0%)        10/10 (100.0%)        0/10
-Combined analysis     7/7 (100.0%)          7/10 (70.0%)          3/10
