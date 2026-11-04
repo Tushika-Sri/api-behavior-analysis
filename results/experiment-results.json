@@ -1,100 +1,338 @@
-{
-  "experiment": "Backend API Behaviour Analysis",
-  "endpoints_tested": 5,
-  "results": [
-    {
+[
+  {
+    "method": "GET",
+    "endpoint": "/products",
+    "staticMutation": "NO",
+    "dynamicMutation": "NO",
+    "combinedMutation": "NO",
+    "staticIdempotent": "YES",
+    "dynamicIdempotent": "YES",
+    "combinedIdempotent": "YES",
+    "groundTruth": {
+      "mutation": "NO",
+      "idempotent": "YES"
+    },
+    "evaluation": {
+      "endpoint": "/products",
       "method": "GET",
-      "endpoint": "/products",
       "mutation": {
         "groundTruth": "NO",
         "static": "NO",
         "dynamic": "NO",
-        "combined": "NO"
+        "combined": "NO",
+        "httpBaseline": "NO"
       },
       "idempotency": {
         "groundTruth": "YES",
         "static": "YES",
         "dynamic": "YES",
-        "combined": "YES"
-      }
-    },
-    {
-      "method": "POST",
-      "endpoint": "/products",
-      "mutation": {
-        "groundTruth": "YES",
-        "static": "YES",
-        "dynamic": "YES",
-        "combined": "YES"
-      },
-      "idempotency": {
-        "groundTruth": "NO",
-        "static": "NO",
-        "dynamic": "NO",
-        "combined": "NO"
-      }
-    },
-    {
-      "method": "PUT",
-      "endpoint": "/products/:id",
-      "mutation": {
-        "groundTruth": "YES",
-        "static": "YES",
-        "dynamic": "YES",
-        "combined": "YES"
-      },
-      "idempotency": {
-        "groundTruth": "YES",
-        "static": "YES",
-        "dynamic": "YES",
-        "combined": "YES"
-      }
-    },
-    {
-      "method": "PUT",
-      "endpoint": "/products/:id/increment",
-      "mutation": {
-        "groundTruth": "YES",
-        "static": "YES",
-        "dynamic": "YES",
-        "combined": "YES"
-      },
-      "idempotency": {
-        "groundTruth": "NO",
-        "static": "NO",
-        "dynamic": "NO",
-        "combined": "NO"
-      }
-    },
-    {
-      "method": "DELETE",
-      "endpoint": "/products/:id",
-      "mutation": {
-        "groundTruth": "YES",
-        "static": "YES",
-        "dynamic": "YES",
-        "combined": "YES"
-      },
-      "idempotency": {
-        "groundTruth": "YES",
-        "static": "YES",
-        "dynamic": "YES",
-        "combined": "YES"
+        "combined": "YES",
+        "httpBaseline": "YES"
       }
     }
-  ],
-  "evaluation_summary": {
-    "mutation": {
-      "http_baseline": "5/5",
-      "static_analysis": "5/5",
-      "dynamic_testing": "5/5",
-      "combined_analysis": "5/5"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/products",
+    "staticMutation": "YES",
+    "dynamicMutation": "YES",
+    "combinedMutation": "YES",
+    "staticIdempotent": "NO",
+    "dynamicIdempotent": "NO",
+    "combinedIdempotent": "NO",
+    "groundTruth": {
+      "mutation": "YES",
+      "idempotent": "NO"
     },
-    "idempotency": {
-      "http_baseline": "4/5",
-      "static_analysis": "5/5",
-      "dynamic_testing": "5/5",
-      "combined_analysis": "5/5"
+    "evaluation": {
+      "endpoint": "/products",
+      "method": "POST",
+      "mutation": {
+        "groundTruth": "YES",
+        "static": "YES",
+        "dynamic": "YES",
+        "combined": "YES",
+        "httpBaseline": "YES"
+      },
+      "idempotency": {
+        "groundTruth": "NO",
+        "static": "NO",
+        "dynamic": "NO",
+        "combined": "NO",
+        "httpBaseline": "NO"
+      }
+    }
+  },
+  {
+    "method": "PUT",
+    "endpoint": "/products/:id",
+    "staticMutation": "YES",
+    "dynamicMutation": "YES",
+    "combinedMutation": "YES",
+    "staticIdempotent": "YES",
+    "dynamicIdempotent": "YES",
+    "combinedIdempotent": "YES",
+    "groundTruth": {
+      "mutation": "YES",
+      "idempotent": "YES"
+    },
+    "evaluation": {
+      "endpoint": "/products/:id",
+      "method": "PUT",
+      "mutation": {
+        "groundTruth": "YES",
+        "static": "YES",
+        "dynamic": "YES",
+        "combined": "YES",
+        "httpBaseline": "YES"
+      },
+      "idempotency": {
+        "groundTruth": "YES",
+        "static": "YES",
+        "dynamic": "YES",
+        "combined": "YES",
+        "httpBaseline": "YES"
+      }
+    }
+  },
+  {
+    "method": "PUT",
+    "endpoint": "/products/:id/increment",
+    "staticMutation": "YES",
+    "dynamicMutation": "YES",
+    "combinedMutation": "YES",
+    "staticIdempotent": "NO",
+    "dynamicIdempotent": "NO",
+    "combinedIdempotent": "NO",
+    "groundTruth": {
+      "mutation": "YES",
+      "idempotent": "NO"
+    },
+    "evaluation": {
+      "endpoint": "/products/:id/increment",
+      "method": "PUT",
+      "mutation": {
+        "groundTruth": "YES",
+        "static": "YES",
+        "dynamic": "YES",
+        "combined": "YES",
+        "httpBaseline": "YES"
+      },
+      "idempotency": {
+        "groundTruth": "NO",
+        "static": "NO",
+        "dynamic": "NO",
+        "combined": "NO",
+        "httpBaseline": "YES"
+      }
+    }
+  },
+  {
+    "method": "DELETE",
+    "endpoint": "/products/:id",
+    "staticMutation": "YES",
+    "dynamicMutation": "YES",
+    "combinedMutation": "YES",
+    "staticIdempotent": "YES",
+    "dynamicIdempotent": "YES",
+    "combinedIdempotent": "YES",
+    "groundTruth": {
+      "mutation": "YES",
+      "idempotent": "YES"
+    },
+    "evaluation": {
+      "endpoint": "/products/:id",
+      "method": "DELETE",
+      "mutation": {
+        "groundTruth": "YES",
+        "static": "YES",
+        "dynamic": "YES",
+        "combined": "YES",
+        "httpBaseline": "YES"
+      },
+      "idempotency": {
+        "groundTruth": "YES",
+        "static": "YES",
+        "dynamic": "YES",
+        "combined": "YES",
+        "httpBaseline": "YES"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "endpoint": "/products/:id/view",
+    "staticMutation": "YES",
+    "dynamicMutation": "YES",
+    "combinedMutation": "YES",
+    "staticIdempotent": "UNCERTAIN",
+    "dynamicIdempotent": "NO",
+    "combinedIdempotent": "UNCERTAIN",
+    "groundTruth": {
+      "mutation": "YES",
+      "idempotent": "NO"
+    },
+    "evaluation": {
+      "endpoint": "/products/:id/view",
+      "method": "GET",
+      "mutation": {
+        "groundTruth": "YES",
+        "static": "YES",
+        "dynamic": "YES",
+        "combined": "YES",
+        "httpBaseline": "NO"
+      },
+      "idempotency": {
+        "groundTruth": "NO",
+        "static": "UNCERTAIN",
+        "dynamic": "NO",
+        "combined": "UNCERTAIN",
+        "httpBaseline": "YES"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "endpoint": "/products/:id/details",
+    "staticMutation": "UNCERTAIN",
+    "dynamicMutation": "YES",
+    "combinedMutation": "UNCERTAIN",
+    "staticIdempotent": "UNCERTAIN",
+    "dynamicIdempotent": "NO",
+    "combinedIdempotent": "UNCERTAIN",
+    "groundTruth": {
+      "mutation": "YES",
+      "idempotent": "NO"
+    },
+    "evaluation": {
+      "endpoint": "/products/:id/details",
+      "method": "GET",
+      "mutation": {
+        "groundTruth": "YES",
+        "static": "UNCERTAIN",
+        "dynamic": "YES",
+        "combined": "UNCERTAIN",
+        "httpBaseline": "NO"
+      },
+      "idempotency": {
+        "groundTruth": "NO",
+        "static": "UNCERTAIN",
+        "dynamic": "NO",
+        "combined": "UNCERTAIN",
+        "httpBaseline": "YES"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "endpoint": "/products/upsert",
+    "staticMutation": "YES",
+    "dynamicMutation": "YES",
+    "combinedMutation": "YES",
+    "staticIdempotent": "NO",
+    "dynamicIdempotent": "YES",
+    "combinedIdempotent": "UNCERTAIN",
+    "groundTruth": {
+      "mutation": "YES",
+      "idempotent": "YES"
+    },
+    "evaluation": {
+      "endpoint": "/products/upsert",
+      "method": "POST",
+      "mutation": {
+        "groundTruth": "YES",
+        "static": "YES",
+        "dynamic": "YES",
+        "combined": "YES",
+        "httpBaseline": "YES"
+      },
+      "idempotency": {
+        "groundTruth": "YES",
+        "static": "NO",
+        "dynamic": "YES",
+        "combined": "UNCERTAIN",
+        "httpBaseline": "NO"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "endpoint": "/products/:id/audit",
+    "staticMutation": "YES",
+    "dynamicMutation": "YES",
+    "combinedMutation": "YES",
+    "staticIdempotent": "NO",
+    "dynamicIdempotent": "NO",
+    "combinedIdempotent": "NO",
+    "groundTruth": {
+      "mutation": "YES",
+      "idempotent": "NO"
+    },
+    "evaluation": {
+      "endpoint": "/products/:id/audit",
+      "method": "POST",
+      "mutation": {
+        "groundTruth": "YES",
+        "static": "YES",
+        "dynamic": "YES",
+        "combined": "YES",
+        "httpBaseline": "YES"
+      },
+      "idempotency": {
+        "groundTruth": "NO",
+        "static": "NO",
+        "dynamic": "NO",
+        "combined": "NO",
+        "httpBaseline": "NO"
+      }
+    }
+  },
+  {
+    "method": "PATCH",
+    "endpoint": "/products/:id/price",
+    "staticMutation": "YES",
+    "dynamicMutation": "YES",
+    "combinedMutation": "YES",
+    "staticIdempotent": "YES",
+    "dynamicIdempotent": "YES",
+    "combinedIdempotent": "YES",
+    "groundTruth": {
+      "mutation": "YES",
+      "idempotent": "YES"
+    },
+    "evaluation": {
+      "endpoint": "/products/:id/price",
+      "method": "PATCH",
+      "mutation": {
+        "groundTruth": "YES",
+        "static": "YES",
+        "dynamic": "YES",
+        "combined": "YES",
+        "httpBaseline": "YES"
+      },
+      "idempotency": {
+        "groundTruth": "YES",
+        "static": "YES",
+        "dynamic": "YES",
+        "combined": "YES",
+        "httpBaseline": "YES"
+      }
     }
   }
-}
+]
+
+Evaluation Summary
+
+Mutation
+Method                Accuracy              Coverage              Uncertain
+HTTP baseline         8/10 (80.0%)          10/10 (100.0%)        0/10
+Static analysis       9/9 (100.0%)          9/10 (90.0%)          1/10
+Dynamic testing       10/10 (100.0%)        10/10 (100.0%)        0/10
+Combined analysis     9/9 (100.0%)          9/10 (90.0%)          1/10
+
+Idempotency
+Method                Accuracy              Coverage              Uncertain
+HTTP baseline         6/10 (60.0%)          10/10 (100.0%)        0/10
+Static analysis       7/8 (87.5%)           8/10 (80.0%)          2/10
+Dynamic testing       10/10 (100.0%)        10/10 (100.0%)        0/10
+Combined analysis     7/7 (100.0%)          7/10 (70.0%)          3/10
