@@ -91,7 +91,6 @@ Static analysis also classified the upsert endpoint as non-idempotent, while dyn
 - Evaluation is limited to ten API endpoints.
 - Database-state observation covers only the `products` and `product_audit` tables.
 - Ground-truth labels are manually assigned based on endpoint implementation.
-- Ground-truth labels and dynamic testing share a database-state-based definition, which may partly influence the measured dynamic testing accuracy.
 - Static analysis uses simplified JavaScript AST and SQL pattern detection and does not comprehensively resolve behavior across imported helper functions.
 - Idempotency is evaluated through observed database-state changes, not HTTP response equivalence.
 - Dynamic results are limited to the tested requests, inputs, and database conditions.
