@@ -138,6 +138,5 @@ The following tables present the evaluation results from the ten-endpoint experi
 - Static analysis uses simplified JavaScript AST and SQL pattern detection and does not comprehensively resolve behavior across imported helper functions.
 - Idempotency is evaluated through observed database-state changes, not HTTP response equivalence.
 - Dynamic results are limited to the tested requests, inputs, and database conditions.
-- Ground-truth labels and dynamic testing share a database-state-based definition, which may partly influence the measured dynamic testing accuracy.
 
 The results are preliminary and limited to the current proof of concept. They should not be interpreted as evidence of general accuracy across arbitrary APIs.
